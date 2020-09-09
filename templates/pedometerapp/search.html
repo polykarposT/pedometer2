@@ -1,0 +1,84 @@
+{% extends "pedometerapp/base.html" %}
+{% block title%}Search{% endblock %}
+{% block body_block %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<div class="jumbotron">
+    {% if user.is_authenticated %}
+        <h4 style="text-align: center;">Here you can search data that you want!</h4>
+        <hr>
+        {% for message in messages %}
+            <div class="alert alert-danger">
+                <a class="close" href="#" data-dismiss="alert">×</a>
+                {{ message }}
+            </div>
+        {% endfor %}
+        <form action="" id="form" method="GET">
+            <div id="user-info">
+                <div class="form-field">
+                    <input required class="form-control" id="date_from" type="date" name="date_from" required>
+                </div>
+                <div class="form-field">
+                    <input required class="form-control" id="date_to" type="date" name="date_to" required>
+                </div>
+            </div>
+            <br>
+            <div style="text-align: center;">
+                <button class="btn btn-primary col-4" id="search" type="submit">Seach</button>
+            </div>
+    </form>
+    <br>
+    <div id="myChart"></div>
+    {% else %}
+    <h4 style="text-align: center;">Please login first<a class="btn btn-primary" href="{% url 'login' %}">Login</a></h4>
+    {% endif %}
+</div>
+<script type="text/javascript">
+    
+    $("#search").click(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "GET", 
+            url: "/process_search2/",
+            data:{ 
+                'date_from': $('#date_from').val(),
+                'date_to': $('#date_to').val()
+            } ,
+            success: function (response) {
+                console.log('RESPONSE', response)
+                for (var i in response) {
+                    var key = Object.keys(response[i])[0]
+                    var value = Object.values(response[i])[0]
+                    state.dates.push(key)
+                    state.steps.push(value)
+                }
+                console.log('STATE:', state)
+                buildChart()
+            }
+        })
+    });
+
+    var state = {
+        'dates': [],
+        'steps': [],
+    }
+    
+    function buildChart(){
+        var chartData = {
+            "type": "bar",
+            "scale-x": {
+                "values": state.dates
+            },
+            "series": [
+                {
+                    "values": state.steps
+                }
+            ]
+        }
+        zingchart.render({
+            id: "myChart",
+            data: chartData,
+        });
+    }
+</script>
+{% endblock %}

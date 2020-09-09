@@ -1,0 +1,69 @@
+{% extends "pedometerapp/base.html" %}
+{% load static %}
+{% block title%}Results{% endblock %}
+{% block body_block %}
+<div class="jumbotron">
+    {% if user.is_authenticated %}
+        <h4 style="text-align: center;">Here are the results!</h4>
+        <h3 style="text-align: center;">Check your latest activity:</h3>
+        <hr>
+        <table class="table highlight">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Steps</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in data %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ d.created_at|date:'D d-M-Y' }}</td>
+                    <td>{{ d.steps }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="top_x_div" style="width: 800px; height: 600px;"></div>
+    {% else %}
+        <h4 style="text-align: center;">Please login first<a class="btn btn-primary" href="{% url 'login' %}">Login</a></h4>
+    {% endif %}
+</div>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    
+    google.charts.load('current', { 'packages': ['bar'] });
+    google.charts.setOnLoadCallback(drawStuff);
+
+    function drawStuff() {
+        var data = new google.visualization.arrayToDataTable([
+            ['Dates', 'Steps'],
+            ["2020-09-05", 12568],
+            ["2020-09-05", 3865],
+            ["2020-09-05", 9687],
+            ["2020-09-06", 11635]
+        ]);
+
+        var options = {
+            width: 800,
+            legend: { position: 'none' },
+            chart: {
+                title: 'Your results',
+                subtitle: 'Your activity for the dates you searched!'
+            },
+            axes: {
+                x: {
+                    0: { side: 'top', label: 'White to move' } // Top x-axis.
+                }
+            },
+            bar: { groupWidth: "90%" }
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('top_x_div'));
+        // Convert the Classic options to Material options.
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    };
+</script>
+{% endblock %}

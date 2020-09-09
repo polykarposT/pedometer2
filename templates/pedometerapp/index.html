@@ -1,0 +1,21 @@
+{% extends "pedometerapp/base.html" %}
+{% block body_block %}
+    <div class="jumbotron" style="box-shadow: 2px 5px 8px #888888;">
+        {% if user.is_authenticated %}
+            <h1 style="text-align: center">Hey, {{ user.username }}!</h1>
+            <h3 style="text-align: center">Welcome to Pedometer start adding your daily activity!</h3>
+            <h5 style="text-align: center">Keep in mind, you can add only one record per day!</h5>
+            <br>
+            <div style="text-align: center;">
+                <a class="btn btn-primary col-4" href="{% url 'stats' %}">Start here</a>
+            </div>
+            {% for step in steps %}
+                {{ step.steps }}
+                {{ step.created_at|date:"d-m-Y" }}
+            {% endfor %}
+        {% else %}
+            <h2 style="text-align: center">Welcome to Pedometer!</h2>
+            <h3 style="text-align: center">Login and check your activity!</h3>
+        {% endif %}
+    </div>
+{% endblock %}

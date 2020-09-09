@@ -1,0 +1,27 @@
+{% extends "pedometerapp/base.html" %}
+{% block title%}Search{% endblock %}
+{% block body_block %}
+<div class="jumbotron">
+    {% if user.is_authenticated %}
+        <h4 style="text-align: center;">Here you can search data that you want!</h4>
+        <hr>
+        {% for message in messages %}
+        <div class="alert alert-danger">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+            {{ message }}
+        </div>
+        {% endfor %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div style="text-align: center;">
+                <button class="btn btn-primary col-4" type="submit">Seach</button>
+            </div>
+        </form>
+        
+    {% else %}
+        <h4 style="text-align: center;">Please login first<a class="btn btn-primary" href="{% url 'login' %}">Login</a></h4>
+    {% endif %}
+</div>
+
+{% endblock %}

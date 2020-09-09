@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %} Pedometer {% endblock %}</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        var user = '{{ request.user }}'
+
+        function getToken(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getToken('csrftoken');
+    </script>
+    <style>
+    .box-element{
+    	box-shadow:hsl(0, 0%, 80%) 0 0 16px;
+	    background-color: #fff;
+	    border-radius: 4px;
+	    padding: 10px;
+    }
+    </style>
+    
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm navbar-light" style="box-shadow: 2px 2px 5px #b3b1b1">
+        <div class="collapse navbar-collapse">
+        {% if user.is_authenticated %}
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active"><a class="navbar-brand nav-link" href="{% url 'index' %}">Pedometer</a>
+                </li>
+                <li class="nav-item active"><a class="nav-link" href="{% url 'stats' %}">Stats</a></li>
+                <li class="nav-item active"><a class="navbar-item nav-link"
+                        href="">About</a></li>
+                <li class="nav-item active"><a class="nav-item nav-link"
+                        href="{% url 'admin:index' %}">Admin Page</a></li>
+            </ul>
+            <a href="{% url 'logout' %}" class="btn btn-dark">Logout</a>
+        {% else %}
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active"><a class="navbar-brand nav-link" href="{% url 'index' %}">Pedometer</a>
+                </li>
+                <li class="nav-item active"><a class="navbar-item nav-link" href="">About</a></li>
+            </ul>
+            <div class="float-right">
+                <a href="{% url 'login' %}" class="btn btn-dark">Login</a>
+            </div>
+        {% endif %}
+        </div>
+    </nav>
+    <br>
+    <div class="container">
+        {% block body_block %}
+        {% endblock %}
+    </div>
+</body>
+</html>

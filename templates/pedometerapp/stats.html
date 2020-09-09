@@ -1,0 +1,94 @@
+{% extends "pedometerapp/base.html" %}
+{% block title%}Stats{% endblock %}
+{% block body_block %}
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="box-element center">
+            {% if dates %}
+                <div class="alert alert-warning" style="text-align: center;">
+                    <h4>Warnign!</h4>
+                    <p>You already have activity for today.<br>
+                    Keep in mind that you can add one acitvity per day.</p>
+                </div>
+            {% endif %}
+            <a class="btn btn-primary col-12" href="{% url 'create_activity' %}">Add new activity here</a>
+            <hr>
+            <h5 style="text-align: center;"> Search past activities easy!</h5>
+            <a class="btn btn-primary col-12" href="{% url 'search' %}">Search</a>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="box-element">
+            <h3 style="text-align: center;">Check your latest activity:</h3>
+            <hr>
+            <table class="table highlight">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Steps</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for step in steps_records %}
+                        {% if forloop.counter == 1 %}
+                        <tr style="background-color: #71c7ec">
+                        {% else %}
+                        <tr>
+                        {% endif %}
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ step.created_at|date:'D d-M-Y' }}</td>
+                            <td>{{ step.steps }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+<h4>Your 5 last activities</h4>
+<div id="myChart" class="box-element"></div>
+<script type="text/javascript">
+
+    var state = {
+        'dates': [],
+        'steps': [],
+    }
+    var url = '/process_search/'
+    $.ajax({
+        method: 'GET',
+        url: url,
+        success: function (response) {
+            console.log('RESPONSE', response)
+            for (var i in response) {
+                var key = Object.keys(response[i])[0]
+                var value = Object.values(response[i])[0]
+                state.dates.push(key)
+                state.steps.push(value)
+            }
+            console.log('STATE:', state)
+            buildChart()
+        }
+    })
+    function buildChart() {
+        var chartData = {
+            "type": "bar",
+            "scale-x": {
+                "values": state.dates
+            },
+            "series": [
+                {
+                    "values": state.steps
+                }
+            ]
+        }
+        zingchart.render({
+            id: "myChart",
+            data: chartData,
+        });
+    }
+</script>
+{% endblock %}
